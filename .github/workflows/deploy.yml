@@ -1,0 +1,51 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deployment
+        id: trigger-deploy
+        run: |
+          RESPONSE=$(curl -s -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }})
+          DEPLOY_ID=$(echo $RESPONSE | jq -r '.deploy.id')
+          echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for deployment
+        run: |
+          DEPLOY_ID=${{ steps.trigger-deploy.outputs.deploy_id }}
+          TIMEOUT=300  # 5 minutes in seconds
+          START_TIME=$(date +%s)
+          
+          while true; do
+            CURRENT_TIME=$(date +%s)
+            ELAPSED=$((CURRENT_TIME - START_TIME))
+            
+            if [ $ELAPSED -gt $TIMEOUT ]; then
+              echo "Deployment timed out after 5 minutes"
+              exit 1
+            fi
+            
+            RESPONSE=$(curl -s -X GET \
+              -H "accept: application/json" \
+              -H "authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID")
+            
+            STATUS=$(echo $RESPONSE | jq -r '.status')
+            
+            if [ "$STATUS" = "live" ]; then
+              echo "Deployment is live!"
+              exit 0
+            elif [ "$STATUS" = "failed" ]; then
+              echo "Deployment failed"
+              exit 1
+            fi
+            
+            echo "Current status: $STATUS"
+            sleep 10
+          done 
