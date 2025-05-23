@@ -38,7 +38,7 @@ app = FastAPI(
     status_code=status.HTTP_200_OK,
     summary="Get a hello world greeting",
     operation_id="hello_world",
-    description="Returns a greeting message with timestamp and optional language specification. Supported languages: en (English), sr (Serbian), es (Spanish), fr (French)",
+    description="Returns a greeting message with timestamp and optional language specification.",
     response_description="A greeting message with metadata"
 )
 async def hello_world(
@@ -48,7 +48,7 @@ async def hello_world(
     Get a hello world greeting.
     
     Args:
-        language: Optional language code for the greeting (en, sr, es, fr)
+        language: Optional language code for the greeting
     
     Returns:
         HelloResponse: A response containing the greeting message and metadata

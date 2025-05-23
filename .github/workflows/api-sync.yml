@@ -71,8 +71,8 @@ jobs:
           CURRENT_VERSION=$(jq -r '.apiVersion' liblab.config.json)
           # Split version into parts
           IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
-          # Increment patch version
-          NEW_VERSION="$major.$minor.$((patch + 1))"
+          # Increment minor version
+          NEW_VERSION="$major.$((minor + 1)).0"
           # Update version in config
           jq --arg v "$NEW_VERSION" '.apiVersion = $v | .languageOptions.python.sdkVersion = $v' liblab.config.json > temp.json && mv temp.json liblab.config.json
 
