@@ -1,6 +1,6 @@
 {
   "sdkName": "hello-world-sdk",
-  "apiVersion": "1.0.0",
+  "apiVersion": "1.0.1",
   "apiName": "hello-world-sdk-api",
   "specFilePath": "./api.json",
   "baseUrl": "https://ci-cd-integration.onrender.com",
@@ -40,7 +40,7 @@
       "pypiPackageName": "",
       "githubRepoName": "hello-world-sdk",
       "ignoreFiles": [],
-      "sdkVersion": "1.0.0",
+      "sdkVersion": "1.0.1",
       "liblabVersion": "2"
     }
   },
