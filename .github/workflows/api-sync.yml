@@ -2,6 +2,7 @@ name: Sync SDK with new API changes
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   sync-sdk-with-api-changes:
