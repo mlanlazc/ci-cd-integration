@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy:
+    if: github.event.head_commit.message != 'Update downloaded API spec' && github.event.head_commit.message != 'Bump sdk version'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render deployment
@@ -17,20 +18,11 @@ jobs:
           echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
 
       - name: Wait for deployment
+        timeout-minutes: 5
         run: |
           DEPLOY_ID=${{ steps.trigger-deploy.outputs.deploy_id }}
-          TIMEOUT=300  # 5 minutes in seconds
-          START_TIME=$(date +%s)
           
           while true; do
-            CURRENT_TIME=$(date +%s)
-            ELAPSED=$((CURRENT_TIME - START_TIME))
-            
-            if [ $ELAPSED -gt $TIMEOUT ]; then
-              echo "Deployment timed out after 5 minutes"
-              exit 1
-            fi
-            
             RESPONSE=$(curl -s -X GET \
               -H "accept: application/json" \
               -H "authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \

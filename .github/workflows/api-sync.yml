@@ -1,13 +1,10 @@
 name: Sync SDK with new API changes
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   sync-sdk-with-api-changes:
-    if: github.event.head_commit.message != 'Update downloaded API spec' && github.event.head_commit.message != 'Bump sdk version'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
