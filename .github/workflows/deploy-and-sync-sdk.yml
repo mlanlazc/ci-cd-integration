@@ -1,11 +1,54 @@
-name: Sync SDK with new API changes
+name: Deploy and Sync
 
 on:
-  workflow_dispatch:
-  workflow_call:
+  push:
+    branches:
+      - main
 
 jobs:
+  deploy:
+    if: github.event.head_commit.message != 'Update downloaded API spec' && github.event.head_commit.message != 'Bump sdk version'
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.wait-deploy.outputs.status }}
+    steps:
+      - name: Trigger Render deployment
+        id: trigger-deploy
+        run: |
+          RESPONSE=$(curl -s -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }})
+          DEPLOY_ID=$(echo $RESPONSE | jq -r '.deploy.id')
+          echo "deploy_id=$DEPLOY_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for deployment
+        id: wait-deploy
+        timeout-minutes: 5
+        run: |
+          DEPLOY_ID=${{ steps.trigger-deploy.outputs.deploy_id }}
+          
+          while true; do
+            RESPONSE=$(curl -s -X GET \
+              -H "accept: application/json" \
+              -H "authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$DEPLOY_ID")
+            
+            STATUS=$(echo $RESPONSE | jq -r '.status')
+            
+            if [ "$STATUS" = "live" ]; then
+              echo "Deployment is live!"
+              echo "status=live" >> "$GITHUB_OUTPUT"
+              exit 0
+            elif [ "$STATUS" = "failed" ]; then
+              echo "Deployment failed"
+              exit 1
+            fi
+            
+            echo "Current status: $STATUS"
+            sleep 10
+          done
+
   sync-sdk-with-api-changes:
+    needs: deploy
+    if: needs.deploy.outputs.status == 'live'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -101,5 +144,4 @@ jobs:
           LIBLAB_TOKEN: ${{ secrets.LIBLAB_TOKEN }}
         run: |
           cd sdk-control
-          liblab pr
-          
+          liblab pr 
