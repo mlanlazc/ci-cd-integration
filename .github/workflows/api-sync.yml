@@ -1,4 +1,4 @@
-name: API Sync and SDK Update
+name: Sync SDK with new API changes
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           API_URL: https://ci-cd-integration.onrender.com
         run: |
           # Download API spec
-          curl -s $API_URL/openapi-json > sdk-control/new.api.json
+          curl -s $API_URL/openapi-json > sdk-control/api.json.new
           
           # Compare with existing spec if it exists
           if [ -f sdk-control/api.json ]; then
