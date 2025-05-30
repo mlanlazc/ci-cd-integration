@@ -27,6 +27,7 @@ GREETINGS: dict[str, str] = {
     Language.FRENCH: "Bonjour le Monde",
     Language.GERMAN: "Hallo Welt",
     Language.DUTCH: "Hallo Wereld",
+    Language.JAPANESE: "こんにちは世界",
 }
 
 app = FastAPI(
