@@ -52,7 +52,7 @@
       "npmOrg": "",
       "githubRepoName": "hello-world-sdk-typescript",
       "ignoreFiles": [],
-      "sdkVersion": "1.0.0",
+      "sdkVersion": "1.5.0",
       "liblabVersion": "2",
       "generateEnumAs": "union"
     }
