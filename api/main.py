@@ -13,6 +13,7 @@ class Language(str, Enum):
     GERMAN = "de"
     DUTCH = "nl"
     ITALIAN = "it"
+    JAPANESE = "ja"
 
 class HelloResponse(BaseModel):
     message: str = Field(..., description="The greeting message")
@@ -28,6 +29,7 @@ GREETINGS: dict[str, str] = {
     Language.GERMAN: "Hallo Welt",
     Language.DUTCH: "Hallo Wereld",
     Language.ITALIAN: "Ciao Mondo",
+    Language.JAPANESE: "こんにちは世界",
 }
 
 app = FastAPI(
